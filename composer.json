@@ -1,0 +1,20 @@
+{
+    "name": "subcosm-probe/primitives",
+    "description": "Primitives Foundation",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matthias Kaschubowski",
+            "email": "nihylum@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Singularity\\Primitives\\": "./src"
+        }
+    }
+}
