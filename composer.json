@@ -15,6 +15,9 @@
     "autoload": {
         "psr-4": {
             "Singularity\\Primitive\\": "./src"
-        }
+        },
+        "files": [
+            "./src/functions.php"
+        ]
     }
 }

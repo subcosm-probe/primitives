@@ -14,6 +14,13 @@ namespace Singularity\Primitive;
 use Singularity\Primitive\Exceptions\UriException;
 use Singularity\Primitive\Traits\Uri\MarshalTrait;
 
+/**
+ * Class Uri
+ *
+ * General Uri Implementation.
+ *
+ * @package Singularity\Primitive
+ */
 class Uri implements UriInterface
 {
     use MarshalTrait;
@@ -31,11 +38,6 @@ class Uri implements UriInterface
         'pop' => 110,
         'ldap' => 389,
         'ssh' => 22,
-    ];
-
-    private const REPLACE_CHARACTERS = [
-        '=' => '%3D',
-        '&' => '%26',
     ];
 
     /**
@@ -73,6 +75,12 @@ class Uri implements UriInterface
      */
     private $fragment = null;
 
+    /**
+     * Uri constructor.
+     *
+     * @param string|null $uri
+     * @throws UriException
+     */
     public function __construct(string $uri = null)
     {
         if ( ! empty($uri) ) {
@@ -93,7 +101,7 @@ class Uri implements UriInterface
      */
     public function isLocal(): bool
     {
-        return $this->scheme === 'file';
+        return $this->scheme === 'file' || $this->host === 'localhost' || endsWith($this->host, '.localhost');
     }
 
     /**
@@ -103,7 +111,7 @@ class Uri implements UriInterface
      */
     public function isRemote(): bool
     {
-        return $this->scheme !== 'file' && $this->host !== 'localhost';
+        return $this->scheme !== 'file' && $this->host !== 'localhost' && ! endsWith($this->host, '.localhost');
     }
 
     /**
@@ -152,7 +160,7 @@ class Uri implements UriInterface
             $authority = $this->userInfo.'@'.$authority;
         }
 
-        if ( null !== $this->port ) {
+        if ( null !== $this->port && $this->port !== ( self::DEFAULT_PORTS[$this->scheme ?? ''] ?? null ) ) {
             $authority .= ':'.$this->port;
         }
 
@@ -556,7 +564,7 @@ class Uri implements UriInterface
     {
         $this->scheme = array_key_exists('scheme', $parts)
             ? $this->marshalScheme($parts['scheme'])
-            : null
+            : ''
         ;
 
         $this->userInfo = $parts['user'] ?? null;
@@ -567,12 +575,17 @@ class Uri implements UriInterface
 
         $this->host = array_key_exists('host', $parts)
             ? $this->marshalHost($parts['host'])
-            : null
+            : $this->host
         ;
 
         $this->port = array_key_exists('port', $parts)
             ? $this->marshalPort($parts['port'])
             : null
+        ;
+
+        $this->path = array_key_exists('path', $parts)
+            ? $this->marshalPath($parts['path'])
+            : '/'
         ;
 
         $this->query = array_key_exists('query', $parts)
@@ -584,6 +597,10 @@ class Uri implements UriInterface
             ? $this->marshalQueryAndFragment($parts['fragment'])
             : null
         ;
+
+        if ( empty($this->scheme) && ! array_key_exists('host', $parts) && ! array_key_exists('port', $parts) ) {
+            $this->scheme = 'http';
+        }
 
         $this->calibratePort();
     }
