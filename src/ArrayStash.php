@@ -11,18 +11,18 @@
 namespace Singularity\Primitive;
 
 
+use Singularity\Primitive\Traits\Stash\ArrayTrait;
 use Singularity\Primitive\Traits\Stash\FactoryMethodTrait;
-use Singularity\Primitive\Traits\Stash\ObjectTrait;
 
 /**
- * Class Stash
+ * Class ArrayStash
  *
- * General json serializable object implementation.
+ * General json serializable array access implementation.
  *
  * @package Singularity\Primitive
  */
-class Stash extends AbstractStash implements \JsonSerializable, \Countable
+class ArrayStash extends AbstractStash implements \ArrayAccess, \JsonSerializable, \Countable
 {
-    use ObjectTrait;
+    use ArrayTrait;
     use FactoryMethodTrait;
 }

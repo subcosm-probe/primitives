@@ -130,4 +130,14 @@ trait StorageTrait
 
         return $item;
     }
+
+    /**
+     * countable helper.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->items);
+    }
 }
